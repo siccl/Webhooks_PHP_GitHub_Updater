@@ -47,4 +47,4 @@ Enable GitLab webhooks integration
 
 ## Donations
 
-PayPal (Donations page)[https://www.paypal.com/donate/?business=GJS2KEGB5XG76&no_recurring=0&item_name=El+c%C3%B3digo+siempre+puede+mejorar%2C+es+un+trabajo+constante%2C+por+eso+siempre+agradecer%C3%A9+tu+apoyo+de+coraz%C3%B3n&currency_code=USD]
+PayPal [Donations page](https://www.paypal.com/donate/?business=GJS2KEGB5XG76&no_recurring=0&item_name=El+c%C3%B3digo+siempre+puede+mejorar%2C+es+un+trabajo+constante%2C+por+eso+siempre+agradecer%C3%A9+tu+apoyo+de+coraz%C3%B3n&currency_code=USD)
