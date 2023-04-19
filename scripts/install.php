@@ -65,7 +65,7 @@ if ($row != false) {
     $dbexist = false;
 }
 // create database tables using sql file
-$sql = file_get_contents('scripts/install.sql');
+$sql = file_get_contents('create_tables.sql');
 try {
     $db->exec($sql);
     if ($dbexist) {
