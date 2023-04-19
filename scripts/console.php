@@ -31,6 +31,7 @@ $command = $argv[1] ?? null;
 $options = $argv[2] ?? null;
 // get arguments
 $arguments = array_slice($argv, 2);
+$db = new PDO('mysql:host='.$_ENV['db_host'].';dbname='.$_ENV['db_name'].';charset=utf8', $_ENV['db_user'], $_ENV['db_password']);
 // validate command and options
 if (!$command) {
     echo $help;
