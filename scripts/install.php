@@ -9,12 +9,12 @@ if (php_sapi_name() !== 'cli') {
     exit;
 }
 // load env variables
-require_once __DIR__ . '../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 use Symfony\Component\Dotenv\Dotenv;
 $dotenv = new Dotenv();
 $dotenv->load('../.env');
 // check env variables for database
-if (!getenv('db_host') || !getenv('db_name') || !getenv('db_user') || !getenv('db_pass')) {
+if (!$_ENV['db_host'] || !$_ENV['db_name'] || !$_ENV['db_user'] || !$_ENV['db_pass']) {
     echo "Error: Missing database credentials information \n";
     notInstalled();
 }
