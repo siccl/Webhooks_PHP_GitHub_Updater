@@ -47,6 +47,7 @@ try {
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
     echo "Error: Could not connect to database \n";
+    echo $e->getMessage() . "\n";
     echo "Please check your database credentials in the .env file \n";
     notInstalled();
 }
