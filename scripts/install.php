@@ -76,6 +76,7 @@ try {
     }
 } catch (PDOException $e) {
     echo "Error: Could not create database tables \n";
+    echo $e->getMessage() . "\n";
     echo "Please check your database credentials in the .env file \n";
     notInstalled();
 }
