@@ -24,7 +24,7 @@ if (filter_var($_SESSION['user'], FILTER_VALIDATE_EMAIL) === false) {
   exit();
 }
 // connect database
-$db = new mysqli($_ENV['db_host'], $_ENV['db_user'], $_ENV['db_pass'], $_ENV['db_name']);
+$db = new mysqli($_ENV['db_host'], $_ENV['db_user'], $_ENV['db_password'], $_ENV['db_name']);
 if ($db->connect_errno) {
   echo "Error: ".$db->connect_error;
   exit;

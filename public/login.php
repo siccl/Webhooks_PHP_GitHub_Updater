@@ -12,7 +12,7 @@ $dotenv->load('../.env');
 // if $_POST is not empty
 if (!empty($_POST)){
     // connect database
-    $db = new mysqli($_ENV['db_host'], $_ENV['db_user'], $_ENV['db_pass'], $_ENV['db_name']);
+    $db = new mysqli($_ENV['db_host'], $_ENV['db_user'], $_ENV['db_password'], $_ENV['db_name']);
     // if POST request try generate token
     // check email or domain in database
     $email = $_POST['email'];
@@ -104,7 +104,7 @@ elseif(!empty($_GET) && !empty($_GET['token'])){
         exit();
     }
     // connect database
-    $db = new mysqli($_ENV['db_host'], $_ENV['db_user'], $_ENV['db_pass'], $_ENV['db_name']);
+    $db = new mysqli($_ENV['db_host'], $_ENV['db_user'], $_ENV['db_password'], $_ENV['db_name']);
     // check token, email in database
     $sql = "SELECT * FROM tokens WHERE email = '".$_GET['user']."' AND token = '".$_GET['token']."'";
     // query database

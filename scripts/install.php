@@ -14,28 +14,28 @@ use Symfony\Component\Dotenv\Dotenv;
 $dotenv = new Dotenv();
 $dotenv->load('../.env');
 // check env variables for database
-if (!$_ENV['db_host'] || !$_ENV['db_name'] || !$_ENV['db_user'] || !$_ENV['db_pass']) {
+if (!$_ENV['db_host'] || !$_ENV['db_name'] || !$_ENV['db_user'] || !$_ENV['db_password']) {
     echo "Error: Missing database credentials information \n";
     notInstalled();
 }
 // validate other vars secret sender site_url
-if (!getenv('secret')){
+if (!$_ENV['secret']){
     echo "Error: Missing secret\n";
     echo "Please set a secret in the .env file\n";
     notInstalled();
 }
-if (!getenv('sender')){
+if (!$_ENV['sender']){
     echo "Error: Missing sender \n";
     echo "Please set a sender in the .env file\n";
     notInstalled();
 }
-if (!getenv('site_url')){
+if (!$_ENV['site_url']){
     echo "Error: Missing site_url \n";
     echo "Please set a site_url in the .env file\n";  
     notInstalled();
 }
 // check if already installed
-if (getenv('status') == 'installed') {
+if ($_ENV['status'] == 'installed') {
     echo "Error: Already installed \n";
     echo "If you need reinstall change .env file manually \n";
     exit;
@@ -43,7 +43,7 @@ if (getenv('status') == 'installed') {
 
 // connect to database
 try {
-    $db = new PDO('mysql:host='.getenv('db_host').';dbname='.getenv('db_name').';charset=utf8', getenv('db_user'), getenv('db_pass'));
+    $db = new PDO('mysql:host='.$_ENV['db_host'].';dbname='.$_ENV['db_name'].';charset=utf8', $_ENV['db_user'], $_ENV['db_password']);
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
     echo "Error: Could not connect to database \n";

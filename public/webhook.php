@@ -37,7 +37,7 @@ if ($body!=""){
       // DDL table logs (id, event, repo, branch, commit, commitName, commitUser, created)
       if ($headers["X-Github-Event"] == "push") {
         // connect database
-        $db = new mysqli($_ENV['db_host'], $_ENV['db_user'], $_ENV['db_pass'], $_ENV['db_name']);
+        $db = new mysqli($_ENV['db_host'], $_ENV['db_user'], $_ENV['db_password'], $_ENV['db_name']);
         if ($db->connect_errno) {
           $log = fopen("../logs/".$dateNum.".log", "a");
           fwrite($log, "Status: Error "."Event: ".$headers["X-Github-Event"]." Committer: ".$committer." Repo: ".$repo." Time: ".date("Y-m-d H:i:s")."\n");
