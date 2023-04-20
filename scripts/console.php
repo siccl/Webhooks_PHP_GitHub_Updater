@@ -41,7 +41,7 @@ if (!$command) {
     exit;
 }else{
     if ($command == 'create') {
-        if (count($arguments) < 4) {
+        if (count($arguments) < 3) {
             echo "Error: Missing arguments \n";
             echo "Usage: php console.php create [name] [branch] [path] \n";
             exit;
