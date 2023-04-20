@@ -54,17 +54,17 @@ if ($body!=""){
           if ($result->num_rows > 0) {
             // output data
             if ($row = $result->fetch_all()) {
-              $id = $row[0];
-              $path = $row[1];
-
-              var_dump($row);
-
-              // if $path is dir
-              if (is_dir($path)) {
-              // execute git pull in path
-                $result = shell_exec("cd ".$path."; git pull");
-              }else{
-                $result = 0;
+              // for rows array 
+              for ($i=0; $i < count($row); $i++) {
+                $id = $row[$i][0];
+                $path = $row[$i][1];
+                // if $path is dir
+                if (is_dir($path)) {
+                // execute git pull in path
+                  $result = shell_exec("cd ".$path."; git pull");
+                }else{
+                  $result = 0;
+                }
               }
               // log to file
               $log = fopen("../logs/".$dateNum.".log", "a");
