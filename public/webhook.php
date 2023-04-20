@@ -56,8 +56,8 @@ if ($body!=""){
             echo "Match found: ".$result->num_rows ."\n";
             // only for debug purposes
             echo $sql."\n";
-            // output data of each row
-            while($row = $result->fetch_row()) {
+            // output data
+            if ($row = $result->fetch_all()) {
               $id = $row[0];
               $path = $row[1];
               // execute git pull in path
