@@ -28,14 +28,12 @@ if ($body!=""){
       // obtener nombre de la rama
       $branch = $decodedBody->ref;
       $branch = str_replace("refs/heads/", "", $branch);
-      if (!empty($files)||!empty($committer)) {
-        // obtener el hash del commit
-        $commit = $decodedBody->after;
-        // obtener el nombre del commit
-        $commitName = $decodedBody->commits[0]->message;
-        // obtener el nombre del usuario que hizo el commit
-        $commitUser = $decodedBody->commits[0]->committer->name;
-      }
+      // obtener el hash del commit
+      $commit = @$decodedBody->after;
+      // obtener el nombre del commit
+      $commitName = @$decodedBody->commits[0]->message;
+      // obtener el nombre del usuario que hizo el commit
+      $commitUser = @$decodedBody->commits[0]->committer->name;
       // DDL table repos (id, name, branch, path)
       // DDL table logs (id, event, repo, branch, commit, commitName, commitUser, created)
       if ($headers["X-Github-Event"] == "push") {
@@ -52,33 +50,42 @@ if ($body!=""){
         // find repo data in database where name = $repo and branch = $branch
         $sql = "SELECT ID, path FROM repos WHERE name = '".$repo."' AND branch = '".$branch."'";
         $result = $db->query($sql);
-        if ($result->num_rows > 0) {
-          // output data of each row
-          while($row = $result->fetch_assoc()) {
-            $id = $row["ID"];
-            $path = $row["path"];
-            // execute git pull in path
-            $result = shell_exec("cd ".$path."; git pull");
-            // log to file
+        if ($result){
+          if ($result->num_rows > 0) {
+            // output data of each row
+            while($row = $result->fetch_assoc()) {
+              $id = $row["ID"];
+              $path = $row["path"];
+              // execute git pull in path
+              $result = shell_exec("cd ".$path."; git pull");
+              // log to file
+              $log = fopen("../logs/".$dateNum.".log", "a");
+              fwrite($log, "Status: OK "."Event: ".$headers["X-Github-Event"]." Committer: ".$committer." Repo: ".$repo." Execution: ". $result ." Time: ".date("Y-m-d H:i:s")."\n");
+              // if files is array
+              if (is_array($files)) {
+                fwrite($log, "Files: ".implode(", ", $files)."\n");
+              }
+              fclose($log);
+              // log to database
+              $sql = "INSERT INTO logs (event, repo, branch, commit, commitName, commitUser, created) VALUES ('".$headers["X-Github-Event"]."', '".$repo."', '".$branch."', '".$commit."', '".$commitName."', '".$commitUser."', '".date("Y-m-d H:i:s")."')";
+              if ($db->query($sql) === TRUE) {
+                $log = fopen("../logs/".$dateNum.".log", "a");
+                fwrite($log, "Status: OK "."Event Loged into DataBase");
+                fclose($log);
+              } else {
+                $log = fopen("../logs/".$dateNum.".log", "a");
+                fwrite($log, "Error: " . $sql . "<br>" . $db->error."\n");
+                fclose($log);
+              }
+              http_response_code(200);
+            }
+          } else {
             $log = fopen("../logs/".$dateNum.".log", "a");
-            fwrite($log, "Status: OK "."Event: ".$headers["X-Github-Event"]." Committer: ".$committer." Repo: ".$repo." Execution: ". $result ." Time: ".date("Y-m-d H:i:s")."\n");
-            // if files is array
-            if (is_array($files)) {
-              fwrite($log, "Files: ".implode(", ", $files)."\n");
-            }
+            fwrite($log, "Status: Error "."Event: ".$headers["X-Github-Event"]." Committer: ".$committer." Repo: ".$repo." Time: ".date("Y-m-d H:i:s")."\n");
+            fwrite($log, "Repo not found in database"."\n");
             fclose($log);
-            // log to database
-            $sql = "INSERT INTO logs (event, repo, branch, commit, commitName, commitUser, created) VALUES ('".$headers["X-Github-Event"]."', '".$repo."', '".$branch."', '".$commit."', '".$commitName."', '".$commitUser."', '".date("Y-m-d H:i:s")."')";
-            if ($db->query($sql) === TRUE) {
-              $log = fopen("../logs/".$dateNum.".log", "a");
-              fwrite($log, "Status: OK "."Event Loged into DataBase");
-              fclose($log);
-            } else {
-              $log = fopen("../logs/".$dateNum.".log", "a");
-              fwrite($log, "Error: " . $sql . "<br>" . $db->error."\n");
-              fclose($log);
-            }
-            http_response_code(200);
+            http_response_code(400);
+            exit;
           }
         } else {
           $log = fopen("../logs/".$dateNum.".log", "a");
