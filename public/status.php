@@ -54,6 +54,7 @@ while ($repo = $repos->fetch_assoc()) {
         echo "<tr>";
             echo "<th scope='col'>Repositorio</th>";
             echo "<th scope='col'>Rama</th>";
+            echo "<th scope='col'>Path</th>";
             echo "<th scope='col'>Commit</th>";
             echo "<th scope='col'>Usuario</th>";
             echo "<th scope='col'>Fecha</th>";
@@ -63,6 +64,7 @@ while ($repo = $repos->fetch_assoc()) {
         echo "<tr>";
             echo "<td><b>".$repo['name']."</b></td>";
             echo "<td><b>".$repo['branch']."</b></td>";
+            echo "<td><b>".$repo['path']."</b></td>";
             echo "<td>".$commit['commitName']."</td>";
             echo "<td>".$commit['commitUser']."</td>";
             echo "<td>".$commit['created']."</td>";
