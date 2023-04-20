@@ -81,6 +81,8 @@ if (!empty($_POST)){
         $headers .= "MIME-Version: 1.0\r \n";
         // html utf8
         $headers .= "Content-Type: text/html; charset=UTF-8\r \n";
+        $to = $email;
+        $subject = "Login to " . $_ENV['site_url'];
         // send email with custom smtp
         mail($to, $subject, $message, $headers);
         include '../templates/login_header.html';

@@ -81,6 +81,9 @@ try {
     notInstalled();
 }
 
+// TODO: create admin user
+
+
 // change .env status to installed
 $env = file_get_contents('../.env');
 $env = str_replace('status=uninstalled', 'status=installed', $env);
