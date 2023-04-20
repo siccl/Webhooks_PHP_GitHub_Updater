@@ -17,7 +17,7 @@ $decodedBody = json_decode($body);
 if ($body!=""){
   if (verifySignature($body,$secret) !== false) {
       // verified
-      echo "authorized";
+      echo "authorized"."\n";
       // identify webhook event
       $headers = getallheaders();
       // identify repository
@@ -52,6 +52,10 @@ if ($body!=""){
         $result = $db->query($sql);
         if ($result){
           if ($result->num_rows > 0) {
+            // print match count
+            echo "Match found: ".$result->num_rows ."\n";
+            // only for debug purposes
+            echo $sql."\n";
             // output data of each row
             while($row = $result->fetch_assoc()) {
               $id = $row["ID"];
