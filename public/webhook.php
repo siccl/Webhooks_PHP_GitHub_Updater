@@ -61,7 +61,7 @@ if ($body!=""){
                 // if $path is dir
                 if (is_dir($path) && $path != "") {
                 // execute git pull in path
-                  $shell_res = shell_exec("cd ".$path."; /usr/bin/git pull");
+                  $shell_res = shell_exec("cd ".$path."; /usr/bin/git pull 2>&1");
                   echo $shell_res."\n";
                 }else{
                   $shell_res = 0;
