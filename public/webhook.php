@@ -22,17 +22,20 @@ if ($body!=""){
       $headers = getallheaders();
       // identify repository
       $repo = $decodedBody->repository->name;
+        
       $files = $decodedBody->commits[0]->modified;
       $committer = $decodedBody->commits[0]->committer->name;
-      // obtener nombre de la rama
-      $branch = $decodedBody->ref;
-      $branch = str_replace("refs/heads/", "", $branch);
-      // obtener el hash del commit
-      $commit = $decodedBody->after;
-      // obtener el nombre del commit
-      $commitName = $decodedBody->commits[0]->message;
-      // obtener el nombre del usuario que hizo el commit
-      $commitUser = $decodedBody->commits[0]->committer->name;
+      if (!empty($files)||!empty($committer)) {
+        // obtener nombre de la rama
+        $branch = $decodedBody->ref;
+        $branch = str_replace("refs/heads/", "", $branch);
+        // obtener el hash del commit
+        $commit = $decodedBody->after;
+        // obtener el nombre del commit
+        $commitName = $decodedBody->commits[0]->message;
+        // obtener el nombre del usuario que hizo el commit
+        $commitUser = $decodedBody->commits[0]->committer->name;
+      }
       // DDL table repos (id, name, branch, path)
       // DDL table logs (id, event, repo, branch, commit, commitName, commitUser, created)
       if ($headers["X-Github-Event"] == "push") {
