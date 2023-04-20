@@ -64,18 +64,22 @@ if (!empty($_POST)){
         $result = $db->query($sql);
         if ($result->num_rows > 0) {
             // generate new token
-            $token = bin2hex(random_bytes(64));}
+            $token = bin2hex(random_bytes(64));
+        }
     }
     if ($token != "") {
         // save token in database
         $sql = "INSERT INTO tokens (email, token) VALUES ('".$email."', '".$token."') ".
                 "ON DUPLICATE KEY UPDATE token = '".$token."'";
+        // query database
+        $result = $db->query($sql);
+        
         // TODO Change to PHPMailer
         // send email with token
         $message = "You have requested access to ". $_ENV['site_url'] . " <br>\n<br>\n".
             "If you not recognize this action please delete this email<br>\n".
             "Click here to login: <br>\n".
-            "<a href='". $_ENV['site_url'] .'/login.php?user='. $user .'&token=' . $token . "'>Login</a>";
+            "<a href='". $_ENV['site_url'] .'/login.php?user='. $email .'&token=' . $token . "'>Login</a>";
         $headers = "From: " . $_ENV['sender'] . "\r \n";
         $headers .= "Reply-To: ". $_ENV['sender'] . "\r \n";
         $headers .= "MIME-Version: 1.0\r \n";
