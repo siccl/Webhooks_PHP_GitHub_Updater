@@ -23,8 +23,8 @@ if ($body!=""){
       // identify repository
       $repo = $decodedBody->repository->name;
         
-      $files = $decodedBody->commits[0]->modified;
-      $committer = $decodedBody->commits[0]->committer->name;
+      $files = @$decodedBody->commits[0]->modified;
+      $committer = @$decodedBody->commits[0]->committer->name;
       // obtener nombre de la rama
       $branch = $decodedBody->ref;
       $branch = str_replace("refs/heads/", "", $branch);
