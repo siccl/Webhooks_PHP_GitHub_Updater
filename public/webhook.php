@@ -25,10 +25,10 @@ if ($body!=""){
         
       $files = $decodedBody->commits[0]->modified;
       $committer = $decodedBody->commits[0]->committer->name;
+      // obtener nombre de la rama
+      $branch = $decodedBody->ref;
+      $branch = str_replace("refs/heads/", "", $branch);
       if (!empty($files)||!empty($committer)) {
-        // obtener nombre de la rama
-        $branch = $decodedBody->ref;
-        $branch = str_replace("refs/heads/", "", $branch);
         // obtener el hash del commit
         $commit = $decodedBody->after;
         // obtener el nombre del commit
