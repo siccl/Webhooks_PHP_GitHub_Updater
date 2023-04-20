@@ -147,7 +147,7 @@ elseif(!empty($_GET) && !empty($_GET['token'])){
 else{
     include '../templates/login_header.html';
 ?>
-                <form action="/tools/login.php?" method="post" name="login" role="form" id="login-form">
+                <form action="/login.php?" method="post" name="login" role="form" id="login-form">
                     <div class="form-group">
                         <input type="email" name="email" class="form-control" id="inputEmail3" placeholder="User email">
                     </div>
