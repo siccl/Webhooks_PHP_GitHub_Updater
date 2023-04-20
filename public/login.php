@@ -118,7 +118,7 @@ elseif(!empty($_GET) && !empty($_GET['token'])){
     if ($result->num_rows > 0) {
         // check token expiration
         $row = $result->fetch_assoc();
-        $token_date = new DateTime($row['updated']);
+        $updated = new DateTime($row['updated']);
         $now = new DateTime();
         $diff = $updated->diff($now);
         // if token is expired
