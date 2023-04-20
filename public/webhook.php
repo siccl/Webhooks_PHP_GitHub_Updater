@@ -57,9 +57,9 @@ if ($body!=""){
             // only for debug purposes
             echo $sql."\n";
             // output data of each row
-            while($row = $result->fetch_array(MYSQLI_ASSOC)) {
-              $id = $row["ID"];
-              $path = $row["path"];
+            while($row = $result->fetch_row()) {
+              $id = $row[0];
+              $path = $row[1];
               // execute git pull in path
               $result = shell_exec("cd ".$path."; git pull");
               // log to file
