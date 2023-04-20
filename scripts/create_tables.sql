@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS logs (
 CREATE TABLE IF NOT EXISTS tokens (
     ID int(10) unsigned NOT NULL AUTO_INCREMENT,
     email varchar(250),
-    token varchar(50),
+    token varchar(64),
     created timestamp default current_timestamp(),
     updated timestamp default current_timestamp(),
     PRIMARY KEY (ID),

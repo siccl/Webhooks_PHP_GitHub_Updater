@@ -57,14 +57,14 @@ if (!empty($_POST)){
     $result = $db->query($sql);
     if ($result->num_rows > 0) {
         // generate new token
-        $token = bin2hex(random_bytes(64));
+        $token = bin2hex(random_bytes(32));
     }else{
         $sql = "SELECT * FROM authorized WHERE type = 'email' AND text = '".$email."'";
         // query database
         $result = $db->query($sql);
         if ($result->num_rows > 0) {
             // generate new token
-            $token = bin2hex(random_bytes(64));
+            $token = bin2hex(random_bytes(32));
         }
     }
     if ($token != "") {
@@ -73,7 +73,7 @@ if (!empty($_POST)){
                 "ON DUPLICATE KEY UPDATE token = '".$token."'";
         // query database
         $result = $db->query($sql);
-        
+
         // TODO Change to PHPMailer
         // send email with token
         $message = "You have requested access to ". $_ENV['site_url'] . " <br>\n<br>\n".
