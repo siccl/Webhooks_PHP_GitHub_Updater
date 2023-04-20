@@ -52,16 +52,20 @@ if ($body!=""){
         $result = $db->query($sql);
         if ($result){
           if ($result->num_rows > 0) {
-            // print match count
-            echo "Match found: ".$result->num_rows ."\n";
-            // only for debug purposes
-            echo $sql."\n";
             // output data
             if ($row = $result->fetch_all()) {
               $id = $row[0];
               $path = $row[1];
+
+              var_dump($row);
+
+              // if $path is dir
+              if (is_dir($path)) {
               // execute git pull in path
-              $result = shell_exec("cd ".$path."; git pull");
+                $result = shell_exec("cd ".$path."; git pull");
+              }else{
+                $result = 0;
+              }
               // log to file
               $log = fopen("../logs/".$dateNum.".log", "a");
               fwrite($log, "Status: OK "."Event: ".$headers["X-Github-Event"]." Committer: ".$committer." Repo: ".$repo." Execution: ". $result ." Time: ".date("Y-m-d H:i:s")."\n");
