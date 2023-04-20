@@ -45,7 +45,7 @@ $repos = $db->query($sql);
 // for each repo
 while ($repo = $repos->fetch_assoc()) {
   // get last commit
-  $sql = "SELECT * FROM logs WHERE repo = ".$repo['name']." ORDER BY id DESC LIMIT 1";
+  $sql = "SELECT * FROM logs WHERE repo = '".$repo['name']."' ORDER BY id DESC LIMIT 1";
   $commit = $db->query($sql)->fetch_assoc();
   // show last commit
   // generate subtitles with repo name and branch
