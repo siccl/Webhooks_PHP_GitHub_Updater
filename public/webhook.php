@@ -62,7 +62,10 @@ if ($body!=""){
             // log to file
             $log = fopen("../logs/".$dateNum.".log", "a");
             fwrite($log, "Status: OK "."Event: ".$headers["X-Github-Event"]." Committer: ".$committer." Repo: ".$repo." Execution: ". $result ." Time: ".date("Y-m-d H:i:s")."\n");
-            fwrite($log, "Files: ".implode(", ", $files)."\n");
+            // if files is array
+            if (is_array($files)) {
+              fwrite($log, "Files: ".implode(", ", $files)."\n");
+            }
             fclose($log);
             // log to database
             $sql = "INSERT INTO logs (event, repo, branch, commit, commitName, commitUser, created) VALUES ('".$headers["X-Github-Event"]."', '".$repo."', '".$branch."', '".$commit."', '".$commitName."', '".$commitUser."', '".date("Y-m-d H:i:s")."')";
