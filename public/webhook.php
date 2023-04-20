@@ -61,14 +61,15 @@ if ($body!=""){
                 // if $path is dir
                 if (is_dir($path)) {
                 // execute git pull in path
-                  $result = shell_exec("cd ".$path."; git pull");
+                  $shell_res = shell_exec("cd ".$path."; git pull");
                 }else{
-                  $result = 0;
+                  $shell_res = 0;
+                  echo $path . " path not found"."\n";
                 }
               }
               // log to file
               $log = fopen("../logs/".$dateNum.".log", "a");
-              fwrite($log, "Status: OK "."Event: ".$headers["X-Github-Event"]." Committer: ".$committer." Repo: ".$repo." Execution: ". $result ." Time: ".date("Y-m-d H:i:s")."\n");
+              fwrite($log, "Status: OK "."Event: ".$headers["X-Github-Event"]." Committer: ".$committer." Repo: ".$repo." Execution: ". $shell_res ." Time: ".date("Y-m-d H:i:s")."\n");
               // if files is array
               if (is_array($files)) {
                 fwrite($log, "Files: ".implode(", ", $files)."\n");
@@ -78,7 +79,7 @@ if ($body!=""){
               $sql = "INSERT INTO logs (event, repo, branch, commit, commitName, commitUser, created) VALUES ('".$headers["X-Github-Event"]."', '".$repo."', '".$branch."', '".$commit."', '".$commitName."', '".$commitUser."', '".date("Y-m-d H:i:s")."')";
               if ($db->query($sql) === TRUE) {
                 $log = fopen("../logs/".$dateNum.".log", "a");
-                fwrite($log, "Status: OK "."Event Loged into DataBase");
+                fwrite($log, "Status: OK "."Event Loged into DataBase"."\n");
                 fclose($log);
               } else {
                 $log = fopen("../logs/".$dateNum.".log", "a");
