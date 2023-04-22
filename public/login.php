@@ -33,7 +33,7 @@ if (!empty($_POST)){
         include '../templates/login_header.html';
         echo '<div class="alert alert-danger" role="alert">';
         // show error message
-        echo 'Error: Email no valido';
+        echo 'Error: Email no valido.';
         echo '</div>';
         include '../templates/login_footer.html';
         exit();
@@ -45,7 +45,7 @@ if (!empty($_POST)){
         include '../templates/login_header.html';
         echo '<div class="alert alert-danger" role="alert">';
         // show error message
-        echo 'Error: Email no valido.';
+        echo 'Error: Email no valido..';
         echo '</div>';
         include '../templates/login_footer.html';
         exit();
