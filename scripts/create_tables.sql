@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS authorized (
     created timestamp default current_timestamp(),
     updated timestamp default current_timestamp(),
     PRIMARY KEY (ID),
-    UNIQUE KEY authorized_type (type)
+    UNIQUE KEY authorized_type (type,text)
 );
 
 CREATE TRIGGER IF NOT EXISTS updated_tokens BEFORE UPDATE ON tokens 
