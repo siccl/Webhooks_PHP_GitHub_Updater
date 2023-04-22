@@ -44,6 +44,7 @@ After resolve login flow you can see the last status for all repositories
 Add more details on status page
 Generate database alternatives, like SQLite or Postgres
 Enable GitLab webhooks integration
+More control from console
 
 ## Donations
 

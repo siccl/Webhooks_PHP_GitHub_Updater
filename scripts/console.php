@@ -23,6 +23,9 @@ $help .= "  update [name] [branch] [path] - Update a repo\n";
 $help .= "  delete [name] [branch] - Delete a repo\n";
 $help .= "  list-tokens - List all tokens\n";
 $help .= "  delete-token [token] - Delete a token\n";
+// TODO admin authorized : 
+// add email or domain
+// remove email or domain
 $help .= "Options:\n";
 $help .= "  -h, --help - Show this help\n";
 // get command
