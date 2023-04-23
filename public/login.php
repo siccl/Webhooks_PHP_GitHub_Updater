@@ -137,8 +137,8 @@ elseif(!empty($_GET) && !empty($_GET['token'])){
         // save token in session
         $_SESSION['token'] = $_GET['token'];
         $_SESSION['user'] = $_GET['user'];
-        // redirect to index.php
-        header('Location: index.php');
+        // redirect to status.php
+        header('Location: status.php');
     }else{
         // show error bootstrap alert
         include '../templates/login_header.html';
