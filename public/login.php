@@ -28,7 +28,8 @@ if (!empty($_POST)){
     }
     $domain = explode("@", $email);
     // check email user is valid alphanumeric
-    if (ctype_alnum($domain[0]) === false) {
+    $tempuser = str_replace(".","",$domain[0]);
+    if (ctype_alnum($tempuser) === false) {
         // show error bootstrap alert
         include '../templates/login_header.html';
         echo '<div class="alert alert-danger" role="alert">';
