@@ -49,6 +49,10 @@ if ($body!=""){
         }
         // find repo data in database where name = $repo and branch = $branch
         $sql = "SELECT ID, path FROM repos WHERE name = '".$repo."' AND branch = '".$branch."'";
+        $localPath = __DIR__; // get tree path first levels /srv/webs/ebema/ vs /srv/webs/dev-ebema/
+        $localPath = explode("/", $localPath);
+        $localPath = $localPath[3];
+
         $result = $db->query($sql);
         if ($result){
           if ($result->num_rows > 0) {
@@ -58,8 +62,10 @@ if ($body!=""){
               for ($i=0; $i < count($row); $i++) {
                 $id = $row[$i][0];
                 $path = $row[$i][1];
+                $repoPath = explode("/", $path);
+                $repoPath = $repoPath[3];
                 // if $path is dir
-                if (is_dir($path) && $path != "") {
+                if ((is_dir($path)) && ($path != "") && ($repoPath == $localPath)) {
                 // execute git pull in path
                   $shell_res = shell_exec("cd ".$path."; /usr/bin/git pull 2>&1");
                   echo $shell_res."\n";
