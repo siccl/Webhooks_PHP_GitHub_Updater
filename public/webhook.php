@@ -97,7 +97,7 @@ if ($body!=""){
             }
           } else {
             $log = fopen("../logs/".$dateNum.".log", "a");
-            fwrite($log, "Status: Error "."Event: ".$headers["X-Github-Event"]." Committer: ".$committer." Repo: ".$repo." Time: ".date("Y-m-d H:i:s")."\n");
+            fwrite($log, "Status: Error. "."Event: ".$headers["X-Github-Event"]." Committer: ".$committer." Repo: ".$repo." Time: ".date("Y-m-d H:i:s")."\n");
             fwrite($log, "Repo not found in database"."\n");
             fclose($log);
             http_response_code(400);
