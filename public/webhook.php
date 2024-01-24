@@ -53,6 +53,10 @@ if ($body!=""){
         $localPath = explode("/", $localPath);
         $localPath = $localPath[3];
 
+        error_log("Github Event: ".$headers["X-Github-Event"]);
+        error_log($sql);
+        error_log($localPath);
+
         $result = $db->query($sql);
         if ($result){
           if ($result->num_rows > 0) {
