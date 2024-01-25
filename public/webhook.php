@@ -10,6 +10,7 @@ use Symfony\Component\Dotenv\Dotenv;
 $dotenv = new Dotenv();
 $dotenv->load('../.env');
 $secret = $_ENV['secret'];
+$level = $_ENV['proyect_folder_level'];
 // get body
 $body = file_get_contents("php://input");
 $decodedBody = json_decode($body);
@@ -22,7 +23,14 @@ if ($body!=""){
       $headers = getallheaders();
       // identify repository
       $repo = $decodedBody->repository->name;
-        
+      if ($repo == "") {
+        // log to file
+        $log = fopen("../logs/".$dateNum.".log", "a");
+        fwrite($log, "Status: Error "."Event: ".$headers["X-Github-Event"]." Committer: ".$committer." Repo: ".$repo." Time: ".date("Y-m-d H:i:s")."\n");
+        fwrite($log, "Repo not found in body"."\n");
+        fclose($log);
+      }
+      // identify files
       $files = @$decodedBody->commits[0]->modified;
       $committer = @$decodedBody->commits[0]->committer->name;
       // obtener nombre de la rama
@@ -49,9 +57,9 @@ if ($body!=""){
         }
         // find repo data in database where name = $repo and branch = $branch
         $sql = "SELECT ID, path FROM repos WHERE name = '".$repo."' AND branch = '".$branch."'";
-        $localPath = __DIR__; // get tree path first levels /srv/webs/ebema/ vs /srv/webs/dev-ebema/
+        $localPath = __DIR__;
         $localPath = explode("/", $localPath);
-        $localPath = $localPath[3];
+        $localPath = $localPath[$level];
 
         error_log("Github Event: ".$headers["X-Github-Event"]);
         error_log($sql);
@@ -67,7 +75,7 @@ if ($body!=""){
                 $id = $row[$i][0];
                 $path = $row[$i][1];
                 $repoPath = explode("/", $path);
-                $repoPath = $repoPath[3];
+                $repoPath = $repoPath[$level];
                 // if $path is dir
                 if ((is_dir($path)) && ($path != "") && ($repoPath == $localPath)) {
                 // execute git pull in path
