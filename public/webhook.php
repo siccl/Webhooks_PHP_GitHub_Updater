@@ -13,11 +13,13 @@ $secret = $_ENV['secret'];
 $level = $_ENV['proyect_folder_level'];
 // get body
 $body = file_get_contents("php://input");
-// log to file
-$log = fopen("../logs/".$dateNum.".log", "a");
-fwrite($log, "Body: ".$body."\n");
-fclose($log);
 $decodedBody = json_decode($body);
+// validate content type
+if ($_SERVER['CONTENT_TYPE'] !== 'application/json') {
+  http_response_code(400);
+  echo "content type not valid";
+  exit;
+}
 // verify signature
 if ($body!=""){
   if (verifySignature($body,$secret) !== false) {
@@ -27,13 +29,6 @@ if ($body!=""){
       $headers = getallheaders();
       // identify repository
       $repo = $decodedBody->repository->name;
-      if ($repo == "") {
-        // log to file
-        $log = fopen("../logs/".$dateNum.".log", "a");
-        fwrite($log, "Status: Error "."Event: ".$headers["X-Github-Event"]." Committer: ".$committer." Repo: ".$repo." Time: ".date("Y-m-d H:i:s")."\n");
-        fwrite($log, "Repo not found in body"."\n");
-        fclose($log);
-      }
       // identify files
       $files = @$decodedBody->commits[0]->modified;
       $committer = @$decodedBody->commits[0]->committer->name;
