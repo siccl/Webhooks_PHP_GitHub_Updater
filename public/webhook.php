@@ -13,6 +13,10 @@ $secret = $_ENV['secret'];
 $level = $_ENV['proyect_folder_level'];
 // get body
 $body = file_get_contents("php://input");
+// log to file
+$log = fopen("../logs/".$dateNum.".log", "a");
+fwrite($log, "Body: ".$body."\n");
+fclose($log);
 $decodedBody = json_decode($body);
 // verify signature
 if ($body!=""){
