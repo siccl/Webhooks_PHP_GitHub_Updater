@@ -48,7 +48,25 @@ if ($body != "") {
     // DDL table repos (id, name, branch, path)
     // DDL table logs (id, event, repo, branch, commit, commitName, commitUser, created)
     if ($headers["X-Github-Event"] == "push") {
+      $retry = 0;
+      retry:
       // connect database
+      try {
+        $retry++;
+        $db = new mysqli($_ENV['db_host'], $_ENV['db_user'], $_ENV['db_password'], $_ENV['db_name']);
+      } catch (Exception $e) {
+        $log = fopen("../logs/" . $dateNum . ".log", "a");
+        fwrite($log, "Status: Error " . "Event: " . $headers["X-Github-Event"] . " Committer: " . $committer . " Repo: " . $repo . " Time: " . date("Y-m-d H:i:s") . "\n");
+        fwrite($log, $e->getMessage() . "\n");
+        fclose($log);
+        //http_response_code(400);
+        //exit;
+      }
+      if(!$db && $retry < 3){
+        sleep(1);
+        goto retry;
+      }
+    /*
       $db = new mysqli($_ENV['db_host'], $_ENV['db_user'], $_ENV['db_password'], $_ENV['db_name']);
       if ($db->connect_errno) {
         $log = fopen("../logs/" . $dateNum . ".log", "a");
@@ -58,6 +76,7 @@ if ($body != "") {
         http_response_code(400);
         exit;
       }
+    */
       // find repo data in database where name = $repo and branch = $branch
       $sql = "SELECT ID, path FROM repos WHERE name = '" . $repo . "' AND branch = '" . $branch . "'";
       $localPath = __DIR__;
