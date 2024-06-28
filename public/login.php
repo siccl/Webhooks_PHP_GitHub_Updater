@@ -90,23 +90,26 @@ if (!empty($_POST)){
         $to = $email;
         $subject = "Login to " . $_ENV['site_url'];
         // send email with custom smtp
-        // mail($to, $subject, $message, $headers);
-        $mailer = new PHPMailer();
-        $mailer->isSMTP();
-        // utf8
-        $mailer->CharSet = 'UTF-8';
-        $mailer->Host = $_ENV['smtp_host'];
-        $mailer->SMTPAuth = true;
-        $mailer->Username = $_ENV['smtp_user'];
-        $mailer->Password = $_ENV['smtp_pass'];
-        $mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mailer->Port = $_ENV['smtp_port'];
-        $mailer->setFrom($_ENV['sender']);
-        $mailer->addAddress($to);
-        $mailer->isHTML(true);
-        $mailer->Subject = $subject;
-        $mailer->Body = $message;
-        $mailer->send();
+        if ($_ENV['smtp_host']!=""){
+            $mailer = new PHPMailer();
+            $mailer->isSMTP();
+            $mailer->CharSet = 'UTF-8';
+            $mailer->Host = $_ENV['smtp_host'];
+            $mailer->SMTPAuth = true;
+            $mailer->Username = $_ENV['smtp_user'];
+            $mailer->Password = $_ENV['smtp_pass'];
+            $mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mailer->Port = $_ENV['smtp_port'];
+            $mailer->setFrom($_ENV['sender']);
+            $mailer->addAddress($to);
+            $mailer->isHTML(true);
+            $mailer->Subject = $subject;
+            $mailer->Body = $message;
+            $mailer->send();
+        }else{
+            // send email with php mail
+            mail($to, $subject, $message, $headers);
+        }
         include '../templates/login_header.html';
         // show success bootstrap alert
         echo '<div class="alert alert-success" role="alert">';
