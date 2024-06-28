@@ -6,9 +6,11 @@
 // start session
 session_start();
 require_once __DIR__ . '/../vendor/autoload.php';
+use PHPMailer\PHPMailer\PHPMailer;
 use Symfony\Component\Dotenv\Dotenv;
 $dotenv = new Dotenv();
 $dotenv->load('../.env');
+
 // if $_POST is not empty
 if (!empty($_POST)){
     // connect database
@@ -75,21 +77,36 @@ if (!empty($_POST)){
         // query database
         $result = $db->query($sql);
 
-        // TODO Change to PHPMailer
         // send email with token
         $message = "You have requested access to ". $_ENV['site_url'] . " <br>\n<br>\n".
             "If you not recognize this action please delete this email<br>\n".
             "Click here to login: <br>\n".
             "<a href='". $_ENV['site_url'] .'/login.php?user='. $email .'&token=' . $token . "'>Login</a>";
-        $headers = "From: " . $_ENV['sender'] . "\r \n";
-        $headers .= "Reply-To: ". $_ENV['sender'] . "\r \n";
-        $headers .= "MIME-Version: 1.0\r \n";
+        //$headers = "From: " . $_ENV['sender'] . "\r \n";
+        //$headers .= "Reply-To: ". $_ENV['sender'] . "\r \n";
+        //$headers .= "MIME-Version: 1.0\r \n";
         // html utf8
-        $headers .= "Content-Type: text/html; charset=UTF-8\r \n";
+        //$headers .= "Content-Type: text/html; charset=UTF-8\r \n";
         $to = $email;
         $subject = "Login to " . $_ENV['site_url'];
         // send email with custom smtp
-        mail($to, $subject, $message, $headers);
+        // mail($to, $subject, $message, $headers);
+        $mailer = new PHPMailer();
+        $mailer->isSMTP();
+        // utf8
+        $mailer->CharSet = 'UTF-8';
+        $mailer->Host = $_ENV['smtp_host'];
+        $mailer->SMTPAuth = true;
+        $mailer->Username = $_ENV['smtp_user'];
+        $mailer->Password = $_ENV['smtp_pass'];
+        $mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mailer->Port = $_ENV['smtp_port'];
+        $mailer->setFrom($_ENV['sender']);
+        $mailer->addAddress($to);
+        $mailer->isHTML(true);
+        $mailer->Subject = $subject;
+        $mailer->Body = $message;
+        $mailer->send();
         include '../templates/login_header.html';
         // show success bootstrap alert
         echo '<div class="alert alert-success" role="alert">';
