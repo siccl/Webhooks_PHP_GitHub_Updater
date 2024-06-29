@@ -21,9 +21,26 @@ $decodedBody = json_decode($body);
 // validate content type
 if ($_SERVER['CONTENT_TYPE'] !== 'application/json') {
   http_response_code(400);
-  echo "content type not valid";
+  echo "Content type not valid";
   exit;
 }
+
+// Identificar el evento webhook
+$eventType = $headers["X-Github-Event"];
+
+// Manejar el evento ping
+if ($eventType == "ping") {
+  http_response_code(200);
+  echo "Ping received successfully";
+  exit;
+}
+
+if ($eventType != "push"){
+  http_response_code(400);
+  echo "Event not supported";
+  exit;
+}
+
 // verify signature
 if ($body != "") {
   if (verifySignature($body, $secret) !== false) {
