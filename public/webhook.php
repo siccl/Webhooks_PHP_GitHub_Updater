@@ -25,6 +25,8 @@ if ($_SERVER['CONTENT_TYPE'] !== 'application/json') {
   exit;
 }
 
+$headers = getallheaders();
+
 // Identificar el evento webhook
 $eventType = $headers["X-Github-Event"];
 
@@ -63,8 +65,6 @@ if ($body != "") {
   if (verifySignature($body, $secret) !== false) {
     // verified
     echo "authorized" . "\n";
-    // identify webhook event
-    $headers = getallheaders();
     // identify repository
     $repo = $decodedBody->repository->name;
     // identify files
