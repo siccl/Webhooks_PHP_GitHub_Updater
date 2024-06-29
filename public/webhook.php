@@ -28,6 +28,17 @@ if ($_SERVER['CONTENT_TYPE'] !== 'application/json') {
 // Identificar el evento webhook
 $eventType = $headers["X-Github-Event"];
 
+// if empty event type, log to file all headers
+if ($eventType == "") {
+  $log = fopen("../logs/" . $dateNum . ".log", "a");
+  fwrite($log, "Status: Error " . "Event: " . $headers["X-Github-Event"] . " Time: " . date("Y-m-d H:i:s") . "\n");
+  fwrite($log, $decodedBody . "\n");
+  fwrite($log, "Headers: " . json_encode($headers) . "\n");
+  fclose($log);
+  http_response_code(400);
+  exit;
+}
+
 // Manejar el evento ping
 if ($eventType == "ping") {
   http_response_code(200);
