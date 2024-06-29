@@ -1,0 +1,6 @@
+#!/bin/bash
+# This script is used to upgrade the application
+# read user onwer of the script folder
+# and run git pull as that user
+user=$(stat -c %U $0)
+sudo -u $user git pull

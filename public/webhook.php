@@ -38,6 +38,12 @@ if ($eventType == "ping") {
 if ($eventType != "push"){
   http_response_code(400);
   echo "Event not supported";
+  // log to file
+  $log = fopen("../logs/" . $dateNum . ".log", "a");
+  fwrite($log, "Status: Error " . "Event: " . $headers["X-Github-Event"] . " Time: " . date("Y-m-d H:i:s") . "\n");
+  fwrite($log, $decodedBody . "\n");
+  fwrite($log, "Headers: " . json_encode($headers) . "\n");
+  fclose($log);
   exit;
 }
 
