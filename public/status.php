@@ -49,27 +49,29 @@ while ($repo = $repos->fetch_assoc()) {
   $commit = $db->query($sql)->fetch_assoc();
   // show last commit
   // generate subtitles with repo name and branch
-  echo "<table class='table table-striped table-bordered table-hover table-sm'>";
-    echo "<thead class='thead-dark'>";
-        echo "<tr>";
-            echo "<th scope='col'>Repositorio</th>";
-            echo "<th scope='col'>Rama</th>";
-            echo "<th scope='col'>Path</th>";
-            echo "<th scope='col'>Commit</th>";
-            echo "<th scope='col'>Usuario</th>";
-            echo "<th scope='col'>Fecha</th>";
-        echo "</tr>";
-    echo "</thead>";
-    echo "<tbody>";
-        echo "<tr>";
-            echo "<td><b>".$repo['name']."</b></td>";
-            echo "<td><b>".$repo['branch']."</b></td>";
-            echo "<td><b>".$repo['path']."</b></td>";
-            echo "<td>".$commit['commitName']."</td>";
-            echo "<td>".$commit['commitUser']."</td>";
-            echo "<td>".$commit['created']."</td>";
-        echo "</tr>";
-    echo "</tbody>";
-    echo "</table>";
+  ?>
+  <table class="table table-striped">
+      <thead>
+          <tr>
+              <th scope='col'>Rama</th>
+              <th scope='col'>Path</th>
+              <th scope='col'>Commit</th>
+              <th scope='col'>Usuario</th>
+              <th scope='col'>Fecha</th>
+          </tr>
+      </thead>
+      <tbody>
+          <tr>
+              <td><b><?= htmlspecialchars($repo['name']) ?></b></td>
+              <td><b><?= htmlspecialchars($repo['branch']) ?></b></td>
+              <td><b><?= htmlspecialchars($repo['path']) ?></b></td>
+              <td><?= isset($commit['commitName']) ? htmlspecialchars($commit['commitName']) : '' ?></td>
+              <td><?= isset($commit['commitUser']) ? htmlspecialchars($commit['commitUser']) : '' ?></td>
+              <td><?= isset($commit['created']) ? htmlspecialchars($commit['created']) : '' ?></td>
+          </tr>
+      </tbody>
+  </table>
+  <?php
 }
 include '../templates/status_footer.html';
+
