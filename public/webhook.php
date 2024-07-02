@@ -32,11 +32,7 @@ $eventType = $headers["X-Github-Event"];
 
 // if empty event type, log to file all headers
 if ($eventType == "") {
-  $log = fopen("../logs/" . $dateNum . ".log", "a");
-  fwrite($log, "Status: Error " . "Event: " . $headers["X-Github-Event"] . " Time: " . date("Y-m-d H:i:s") . "\n");
-  fwrite($log, $decodedBody . "\n");
-  fwrite($log, "Headers: " . json_encode($headers) . "\n");
-  fclose($log);
+  writeToLog("Status: Error Event: " . $headers["X-Github-Event"] . " Time: " . date("Y-m-d H:i:s"));
   http_response_code(400);
   exit;
 }
@@ -44,19 +40,17 @@ if ($eventType == "") {
 // Manejar el evento ping
 if ($eventType == "ping") {
   http_response_code(200);
+  writeToLog("Status: OK Event: " . $headers["X-Github-Event"] . " Time: " . date("Y-m-d H:i:s"));
   echo "Ping received successfully";
   exit;
 }
 
-if ($eventType != "push"){
+if ($eventType != "push") {
   http_response_code(400);
   echo "Event not supported";
-  // log to file
-  $log = fopen("../logs/" . $dateNum . ".log", "a");
-  fwrite($log, "Status: Error " . "Event: " . $headers["X-Github-Event"] . " Time: " . date("Y-m-d H:i:s") . "\n");
-  fwrite($log, $decodedBody . "\n");
-  fwrite($log, "Headers: " . json_encode($headers) . "\n");
-  fclose($log);
+  writeToLog("Status: Error Event: " . $headers["X-Github-Event"] . " Time: " . date("Y-m-d H:i:s") . "\n");
+  writeToLog($decodedBody . "\n");
+  writeToLog("Headers: " . json_encode($headers) . "\n");
   exit;
 }
 
@@ -85,22 +79,24 @@ if ($body != "") {
       $retry = 0;
       retry:
       // connect database
-      try {
-        $retry++;
-        $db = new mysqli($_ENV['db_host'], $_ENV['db_user'], $_ENV['db_password'], $_ENV['db_name']);
-      } catch (Exception $e) {
-        $log = fopen("../logs/" . $dateNum . ".log", "a");
-        fwrite($log, "Status: Error " . "Event: " . $headers["X-Github-Event"] . " Committer: " . $committer . " Repo: " . $repo . " Time: " . date("Y-m-d H:i:s") . "\n");
-        fwrite($log, $e->getMessage() . "\n");
-        fclose($log);
-        //http_response_code(400);
-        //exit;
+      $retry = 0;
+      $maxRetries = 3;
+      while ($retry < $maxRetries) {
+          try {
+              $db = new mysqli($_ENV['db_host'], $_ENV['db_user'], $_ENV['db_password'], $_ENV['db_name']);
+              break; // Salir del bucle si la conexión es exitosa
+          } catch (Exception $e) {
+              writeToLog("Intento de conexión a DB fallido: " . $e->getMessage());
+              $retry++;
+              if ($retry >= $maxRetries) {
+                  http_response_code(500);
+                  echo "Error al conectar con la base de datos";
+                  exit;
+              }
+              sleep(1); // Esperar antes de reintentar
+          }
       }
-      if(!$db && $retry < 3){
-        sleep(1);
-        goto retry;
-      }
-    /*
+      /*
       $db = new mysqli($_ENV['db_host'], $_ENV['db_user'], $_ENV['db_password'], $_ENV['db_name']);
       if ($db->connect_errno) {
         $log = fopen("../logs/" . $dateNum . ".log", "a");
@@ -112,7 +108,12 @@ if ($body != "") {
       }
     */
       // find repo data in database where name = $repo and branch = $branch
-      $sql = "SELECT ID, path FROM repos WHERE name = '" . $repo . "' AND branch = '" . $branch . "'";
+      $sql = "SELECT ID, path FROM repos WHERE name = ? AND branch = ?";
+      $stmt = $db->prepare($sql);
+      $stmt->bind_param("ss", $repo, $branch);
+      $stmt->execute();
+      $result = $stmt->get_result();
+
       $localPath = __DIR__;
       $localPath = explode("/", $localPath);
       $localPath = $localPath[$level];
@@ -122,7 +123,7 @@ if ($body != "") {
         error_log($sql);
         error_log($localPath);
       }
-      $result = $db->query($sql);
+
       if ($result) {
         if ($result->num_rows > 0) {
           // output data
@@ -144,49 +145,37 @@ if ($body != "") {
               }
             }
             // log to file
-            $log = fopen("../logs/" . $dateNum . ".log", "a");
-            fwrite($log, "Status: OK " . "Event: " . $headers["X-Github-Event"] . " Committer: " . $committer . " Repo: " . $repo . " Execution: " . $shell_res . " Time: " . date("Y-m-d H:i:s") . "\n");
+            writeToLog("Status: OK " . "Event: " . $headers["X-Github-Event"] . " Committer: " . $committer . " Repo: " . $repo . " Execution: " . $shell_res . " Time: " . date("Y-m-d H:i:s"));
             // if files is array
             if (is_array($files)) {
-              fwrite($log, "Files: " . implode(", ", $files) . "\n");
+              writeToLog("Files: " . implode(", ", $files));
             }
-            fclose($log);
             // log to database
             $sql = "INSERT INTO logs (event, repo, branch, commit, commitName, commitUser, created) VALUES ('" . $headers["X-Github-Event"] . "', '" . $repo . "', '" . $branch . "', '" . $commit . "', '" . $commitName . "', '" . $commitUser . "', '" . date("Y-m-d H:i:s") . "')";
             if ($db->query($sql) === TRUE) {
-              $log = fopen("../logs/" . $dateNum . ".log", "a");
-              fwrite($log, "Status: OK " . "Event Loged into DataBase" . "\n");
-              fclose($log);
+              writeToLog("Status: OK " . "Event Loged into DataBase" . " Time: " . date("Y-m-d H:i:s"));
             } else {
-              $log = fopen("../logs/" . $dateNum . ".log", "a");
-              fwrite($log, "Error: " . $sql . "<br>" . $db->error . "\n");
-              fclose($log);
+              writeToLog("Status: Error " . $sql . " Time: " . date("Y-m-d H:i:s"));
             }
             http_response_code(200);
           }
         } else {
-          $log = fopen("../logs/" . $dateNum . ".log", "a");
-          fwrite($log, "Status: Error. " . "Event: " . $headers["X-Github-Event"] . " Committer: " . $committer . " Repo: " . $repo . " Time: " . date("Y-m-d H:i:s") . "\n");
-          fwrite($log, "Repo not found in database" . "\n");
-          fclose($log);
+          writeToLog("Status: Error " . "Event: " . $headers["X-Github-Event"] . " Committer: " . $committer . " Repo: " . $repo . " Time: " . date("Y-m-d H:i:s"));
+          writeToLog("Repo not found in database");
           http_response_code(400);
           exit;
         }
       } else {
-        $log = fopen("../logs/" . $dateNum . ".log", "a");
-        fwrite($log, "Status: Error " . "Event: " . $headers["X-Github-Event"] . " Committer: " . $committer . " Repo: " . $repo . " Time: " . date("Y-m-d H:i:s") . "\n");
-        fwrite($log, "Repo not found in database" . "\n");
-        fclose($log);
+        writeToLog("Status: Error " . "Event: " . $headers["X-Github-Event"] . " Committer: " . $committer . " Repo: " . $repo . " Time: " . date("Y-m-d H:i:s"));
+        writeToLog("Repo not found in database");
         http_response_code(400);
         exit;
       }
     } else {
       // log to file
-      $log = fopen("../logs/" . $dateNum . ".log", "a");
-      fwrite($log, "Status: Error " . "Event: " . $headers["X-Github-Event"] . " Committer: " . $committer . " Repo: " . $repo . " Time: " . date("Y-m-d H:i:s") . "\n");
-      fwrite($log, $decodedBody . "\n");
-      fwrite($log, "Headers: " . json_encode($headers) . "\n");
-      fclose($log);
+      writeToLog("Status: Error " . "Event: " . $headers["X-Github-Event"] . " Committer: " . $committer . " Repo: " . $repo . " Time: " . date("Y-m-d H:i:s"));
+      writeToLog($decodedBody . "\n");
+      writeToLog("Headers: " . json_encode($headers) . "\n");
       http_response_code(400);
     }
   } else {
@@ -199,11 +188,25 @@ if ($body != "") {
   echo "nothing to do";
   exit;
 }
-function verifySignature($body, $secret)
-{
+
+// Mejora en la verificación de firma
+function verifySignature($body, $secret) {
   $headers = getallheaders();
   if (!isset($headers['X-Hub-Signature-256'])) {
-    return false;
+      writeToLog("Falta el encabezado X-Hub-Signature-256");
+      return false;
   }
-  return hash_equals('sha256=' . hash_hmac('sha256', $body, $secret), $headers['X-Hub-Signature-256']);
+  $signature = 'sha256=' . hash_hmac('sha256', $body, $secret);
+  return hash_equals($signature, $headers['X-Hub-Signature-256']);
+}
+
+// Función para escribir en el archivo de log
+function writeToLog($message) {
+  global $dateNum;
+  $logFilePath = "../logs/" . $dateNum . ".log";
+  $log = fopen($logFilePath, "a");
+  if ($log) {
+      fwrite($log, $message . "\n");
+      fclose($log);
+  }
 }
