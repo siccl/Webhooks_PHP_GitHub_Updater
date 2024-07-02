@@ -46,7 +46,7 @@ $stmt = $db->prepare("SELECT * FROM logs WHERE repo = ? and branch = ? ORDER BY 
 while ($repo = $repos->fetch_assoc()) {
   $stmt->bind_param("ss", $repo['name'], $repo['branch']);
   $stmt->execute();
-  $commits = $stmt->get_result()->fetch_assoc();
+  $commits = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
   // show last 3 commits
   // generate subtitles with repo name and branch
   ?>
@@ -62,7 +62,7 @@ while ($repo = $repos->fetch_assoc()) {
       </thead>
       <tbody>
 <?php
-  while ($commit = $commits) {
+  foreach ($commits as $commit) {
     ?>
           <tr>
               <td><b><?= htmlspecialchars($repo['name']) ?></b></td>
