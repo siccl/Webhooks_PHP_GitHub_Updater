@@ -2,6 +2,11 @@
 /**
  * Monitor status of all repositories
  */
+// Función para redirigir al login
+function redirectToLogin() {
+  header('Location: login.php');
+  exit();
+}
 // start session
 session_start();
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -9,44 +14,39 @@ use Symfony\Component\Dotenv\Dotenv;
 $dotenv = new Dotenv();
 $dotenv->load('../.env');
 // validate session
-if (empty($_SESSION['token'])){
-  header('Location: login.php');
-  exit();
+if (empty($_SESSION['token']) || ctype_alnum($_SESSION['token']) === false || strlen($_SESSION['token']) != 64 || filter_var($_SESSION['user'], FILTER_VALIDATE_EMAIL) === false) {
+  redirectToLogin();
 }
-// validate token 64 alphanumeric characters
-if (ctype_alnum($_SESSION['token']) === false || strlen($_SESSION['token']) != 64) {
-  header('Location: login.php');
-  exit();
-}
-// validate user email
-if (filter_var($_SESSION['user'], FILTER_VALIDATE_EMAIL) === false) {
-  header('Location: login.php');
-  exit();
-}
+
 // connect database
 $db = new mysqli($_ENV['db_host'], $_ENV['db_user'], $_ENV['db_password'], $_ENV['db_name']);
 if ($db->connect_errno) {
-  echo "Error: ".$db->connect_error;
-  exit;
+  die("Error de conexión: " . $db->connect_error);
 }
-// validate token and user
-$sql = "SELECT count(*) exist FROM tokens WHERE email = '".$_SESSION['user']."' AND token = '".$_SESSION['token']."'";
-$validate = $db->query($sql)->fetch_assoc();
+
+// Validación de token y usuario con consulta preparada
+$stmt = $db->prepare("SELECT count(*) exist FROM tokens WHERE email = ? AND token = ?");
+$stmt->bind_param("ss", $_SESSION['user'], $_SESSION['token']);
+$stmt->execute();
+$result = $stmt->get_result();
+$validate = $result->fetch_assoc();
 if ($validate['exist'] == 0){
-  header('Location: login.php');
-  exit();
+  redirectToLogin();
 }
+
 // show status
 include '../templates/status_header.html';
 // for all repo and branch combinations in repos table show last commit from logs table
 // get all repos
 $sql = "SELECT * FROM repos";
 $repos = $db->query($sql);
-// for each repo
+
+$stmt = $db->prepare("SELECT * FROM logs WHERE repo = ? and branch = ? ORDER BY id DESC LIMIT 1");
+
 while ($repo = $repos->fetch_assoc()) {
-  // get last commit
-  $sql = "SELECT * FROM logs WHERE repo = '".$repo['name']."' and branch = '{$repo['branch']}' ORDER BY id DESC LIMIT 1";
-  $commit = $db->query($sql)->fetch_assoc();
+  $stmt->bind_param("ss", $repo['name'], $repo['branch']);
+  $stmt->execute();
+  $commit = $stmt->get_result()->fetch_assoc();
   // show last commit
   // generate subtitles with repo name and branch
   ?>
@@ -74,4 +74,5 @@ while ($repo = $repos->fetch_assoc()) {
   <?php
 }
 include '../templates/status_footer.html';
-
+// close database
+$db->close();
