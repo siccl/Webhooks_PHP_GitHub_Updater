@@ -54,6 +54,7 @@ while ($repo = $repos->fetch_assoc()) {
       <thead>
           <tr>
               <th scope='col'>Rama</th>
+              <th scope='col'>Branch</th>
               <th scope='col'>Path</th>
               <th scope='col'>Commit</th>
               <th scope='col'>Usuario</th>
