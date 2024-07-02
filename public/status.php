@@ -41,7 +41,7 @@ include '../templates/status_header.html';
 $sql = "SELECT * FROM repos";
 $repos = $db->query($sql);
 
-$stmt = $db->prepare("SELECT * FROM logs WHERE repo = ? and branch = ? ORDER BY id DESC LIMIT 1");
+$stmt = $db->prepare("SELECT * FROM logs WHERE repo = ? and branch = ? ORDER BY id DESC LIMIT 3");
 
 while ($repo = $repos->fetch_assoc()) {
   $stmt->bind_param("ss", $repo['name'], $repo['branch']);
