@@ -139,6 +139,29 @@ if ($body != "") {
                 // execute git pull in path
                 $shell_res = shell_exec("cd " . $path . "; /usr/bin/git pull 2>&1");
                 echo $shell_res . "\n";
+                /* 
+                post actions:
+                si hay un nuevo archivo en el commit 
+                en la carpeta migrarions
+                con el nombre 00X.php
+                ejecutar migrations/migration, en el path del repo
+                */ 
+                if (is_array($files)) {
+                  foreach ($files as $file) {
+                    if (strpos($file, "migrations") !== false) {
+                      if (strpos($file, ".php") !== false) {
+                        // check if file migrations/migration exists
+                        if (file_exists($path . "/migrations/migration")) {
+                          // execute migrations/migration
+                          $shell_res = shell_exec("cd " . $path . "; ./migrations/migration 2>&1");
+                          // log to file
+                          writeToLog("Status: OK " . "Event: " . $headers["X-Github-Event"] . " Committer: " . $committer . " Repo: " . $repo . " Execution: " . $shell_res . " Time: " . date("Y-m-d H:i:s"));
+                        } 
+                      }
+                    }
+                  }
+                }
+
               } else {
                 $shell_res = 0;
                 echo $path . " path not found" . "\n";
