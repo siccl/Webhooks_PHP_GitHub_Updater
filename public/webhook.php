@@ -63,6 +63,7 @@ if ($body != "") {
     $repo = $decodedBody->repository->name;
     // identify files
     $files = @$decodedBody->commits[0]->modified;
+    $file_added = @$decodedBody->commits[0]->added;
     $committer = @$decodedBody->commits[0]->committer->name;
     // obtener nombre de la rama
     $branch = $decodedBody->ref;
@@ -146,8 +147,8 @@ if ($body != "") {
                 con el nombre 00X.php
                 ejecutar migrations/migration, en el path del repo
                 */ 
-                if (is_array($files)) {
-                  foreach ($files as $file) {
+                if (is_array($file_added)) {
+                  foreach ($file_added as $file) {
                     if (strpos($file, "migrations") !== false) {
                       if (strpos($file, ".php") !== false) {
                         // check if file migrations/migration exists
