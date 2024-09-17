@@ -3,7 +3,6 @@
     * Mariadb 10.1.26
     * database: *_webhook
  */
-set global log_bin_trust_function_creators = 1;
 
 -- create table repos (id, name, branch, path)
 CREATE TABLE IF NOT EXISTS repos (
@@ -50,9 +49,11 @@ CREATE TABLE IF NOT EXISTS authorized (
     UNIQUE KEY authorized_type (type,text)
 );
 
-CREATE TRIGGER IF NOT EXISTS updated_tokens BEFORE UPDATE ON tokens 
+
+DROP TRIGGER IF EXISTS updated_tokens;
+
+CREATE TRIGGER updated_tokens BEFORE UPDATE ON tokens 
 FOR EACH ROW
 BEGIN 
-	SET NEW.updated = NOW();
+    SET NEW.updated = NOW();
 END;
-set global log_bin_trust_function_creators = 0;
