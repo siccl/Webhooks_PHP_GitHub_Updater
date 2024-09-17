@@ -14,7 +14,7 @@ define('BASE_PATH', realpath(__DIR__ . '/..'));
 require_once BASE_PATH . '/vendor/autoload.php';
 use Symfony\Component\Dotenv\Dotenv;
 $dotenv = new Dotenv();
-$dotenv->load('../.env');
+$dotenv->load(BASE_PATH . '/.env');
 // generate menu
 $help = "Webhooks PHP GitHub Updater CLI\n";
 $help .= "Usage: php console.php [command] [options]\n";

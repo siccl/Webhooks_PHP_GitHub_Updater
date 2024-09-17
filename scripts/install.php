@@ -14,7 +14,7 @@ define('BASE_PATH', realpath(__DIR__ . '/..'));
 require_once BASE_PATH . '/vendor/autoload.php';
 use Symfony\Component\Dotenv\Dotenv;
 $dotenv = new Dotenv();
-$dotenv->load('../.env');
+$dotenv->load(BASE_PATH . '/.env');
 // check env variables for database
 if (!$_ENV['db_host'] || !$_ENV['db_name'] || !$_ENV['db_user'] || !$_ENV['db_password']) {
     echo "Error: Missing database credentials information \n";
