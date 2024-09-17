@@ -56,8 +56,12 @@ echo "Database connection successful \n";
 echo "Checking database tables \n";
 // validate table authorized exists
 $sql = "SELECT 1 FROM authorized LIMIT 1";
-$result = $db->query($sql);
-$row = $result->fetch();
+try {
+    $result = $db->query($sql);
+    $row = $result->fetch();
+} catch (PDOException $e) {
+    $row = false;
+}
 if ($row != false) {
     echo "Updating Database \n";
     $dbexist = true;
