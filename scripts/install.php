@@ -8,8 +8,10 @@
 if (php_sapi_name() !== 'cli') {
     exit;
 }
+// set base path for the project
+define('BASE_PATH', realpath(__DIR__ . '/..'));
 // load env variables
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once BASE_PATH . '/vendor/autoload.php';
 use Symfony\Component\Dotenv\Dotenv;
 $dotenv = new Dotenv();
 $dotenv->load('../.env');
