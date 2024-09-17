@@ -1,8 +1,10 @@
 /*
     * create tables for the database
     * Mariadb 10.1.26
-    * database: ebemaWebhook
+    * database: *_webhook
  */
+set global log_bin_trust_function_creators = 1;
+
 -- create table repos (id, name, branch, path)
 CREATE TABLE IF NOT EXISTS repos (
     ID int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -53,3 +55,4 @@ FOR EACH ROW
 BEGIN 
 	SET NEW.updated = NOW();
 END;
+set global log_bin_trust_function_creators = 0;
