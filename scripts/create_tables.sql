@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS logs (
     repo varchar(250),
     branch varchar(250),
     commit varchar(250),
-    commitName varchar(250),
+    commitName text,
     commitUser varchar(250),
     created timestamp default current_timestamp(),
     PRIMARY KEY (ID)
